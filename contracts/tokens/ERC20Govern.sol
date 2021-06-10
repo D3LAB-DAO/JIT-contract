@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.0;
 
@@ -74,12 +74,19 @@ contract ERC20Govern is Context, Ownable, ERC20, IERC20Govern {
      * @dev Update the `earnAddress`.
      * Can only be called by the current operator.
      */
-    function updateEarnAddress(address earnAddress_) public onlyOwner {
+    function updateEarnAddress(address earnAddress_) public virtual onlyOwner {
         require(
             earnAddress_ != earnAddress && earnAddress_ != address(0) && earnAddress_ != BURN_ADDRESS,
             "ERC20Govern::updateEarnAddress: Earn address must not be the original one, zero, and burn address."
         );
         earnAddress = earnAddress_;
+    }
+
+    modifier transferTaxFree {
+        uint16 transferTaxRate_ = transferTaxRate;
+        transferTaxRate = 0;
+        _;
+        transferTaxRate = transferTaxRate_;
     }
 
     /* Anti Whale */
