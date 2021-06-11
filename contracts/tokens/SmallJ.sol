@@ -4,13 +4,13 @@ pragma solidity ^0.8.0;
 
 import "./ERC20Govern.sol";
 
-interface IjSmall {
+interface ISmallJ {
     // TODO
 }
 
 /** 
- * @title jSmall
- * @dev Governance token at jSmall system.
+ * @title SmallJ
+ * @dev Governance token at Small-J system.
  * 
  * Features:
  * 
@@ -23,7 +23,7 @@ interface IjSmall {
  * 
  * - Openzeppelin
  */
-contract jSmall is ERC20Govern, IjSmall {
+contract SmallJ is ERC20Govern, ISmallJ {
     uint256 immutable private _cap = 30000 * 10 ** 18;
 
     /**

@@ -23,7 +23,11 @@ interface IMigratorChef {
  * 
  * Have fun reading it. Hopefully it's bug-free. God bless.
  * 
- * TODO: Staking JIT to earn small-j tokn.
+ * TODO
+ * - Staking JIT to earn small-j token
+ * - Check safemath-ed operations
+ * - Harvest lockup
+ * - Applying tx fee. Ref: GoCerberus
  */
 contract MasterChef is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -104,7 +108,11 @@ contract MasterChef is Ownable, ReentrancyGuard {
     }
 
     /// Add a new lp to the pool. Can only be called by the owner.
-    function add(uint256 _allocPoint, ERC20 _lpToken, uint16 _depositFeeBP, bool _withUpdate) public onlyOwner nonDuplicated(_lpToken) {
+    function add(uint256 _allocPoint, IERC20 _lpToken, uint16 _depositFeeBP, bool _withUpdate)
+        public
+        onlyOwner
+        nonDuplicated(_lpToken)
+    {
         require(_depositFeeBP <= 10000, "add: invalid deposit fee basis points");
         if (_withUpdate) {
             massUpdatePools();
@@ -122,7 +130,10 @@ contract MasterChef is Ownable, ReentrancyGuard {
     }
 
     /// Update the given pool's JIT allocation point and deposit fee. Can only be called by the owner.
-    function set(uint256 _pid, uint256 _allocPoint, uint16 _depositFeeBP, bool _withUpdate) public onlyOwner {
+    function set(uint256 _pid, uint256 _allocPoint, uint16 _depositFeeBP, bool _withUpdate)
+        public
+        onlyOwner
+    {
         require(_depositFeeBP <= 10000, "set: invalid deposit fee basis points");
         if (_withUpdate) {
             massUpdatePools();
@@ -192,6 +203,9 @@ contract MasterChef is Ownable, ReentrancyGuard {
         }
         if (_amount > 0) {
             pool.lpToken.safeTransferFrom(address(msg.sender), address(this), _amount);
+            if (address(pool.lpToken) == address(jit)) {
+                // TODO
+            }
             if (pool.depositFeeBP > 0) { // TODO
                 uint256 depositFee = _amount * pool.depositFeeBP / 10000;
                 pool.lpToken.safeTransfer(feeAddress, depositFee);
@@ -248,17 +262,18 @@ contract MasterChef is Ownable, ReentrancyGuard {
     }
 
     /// Update dev address by the previous dev.
-    function dev(address _devaddr) public {
-        require(msg.sender == devaddr, "dev: wut?");
+    function setDevAddress(address _devaddr) public {
+        require(msg.sender == devaddr, "setDevAddress: FORBIDDEN");
         devaddr = _devaddr;
     }
 
+    /// Update fee address by the previous `feeAddress`.
     function setFeeAddress(address _feeAddress) public {
         require(msg.sender == feeAddress, "setFeeAddress: FORBIDDEN");
         feeAddress = _feeAddress;
     }
 
-    /// Pancake has to add hidden dummy pools inorder to alter the emission, here we make it simple and transparent to all.
+    /// Update `jitPerBlock` by the owner.
     function updateEmissionRate(uint256 _jitPerBlock) public onlyOwner {
         massUpdatePools();
         jitPerBlock = _jitPerBlock;
