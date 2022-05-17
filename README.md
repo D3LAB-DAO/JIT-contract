@@ -1,14 +1,25 @@
-# JIT-ney
+# Repusitory
 
-> A jitney is a five-cent coin published by U.S. Mint,\
-> but JIT-ney is an algorithmically minted crypto coin in a decentralized manner.
+> Influence, Reputation, and Credit
 
-# Influence, Reputation, and Credit
+## Keywords
 
-## Credit in Web3
+* On-chain Reputation
+* Credit in Web3
+* DID
+* Tokenize
 
-TBA
+# Chainlink
 
-# Credit Loan
+* Oracle
+* Keepers
+* CCIP, Maybe later.
 
-TBA
+## Usecase
+
+* Outsourcing `template/outsourcing.sol`
+<!--
+* Chainlink SLA
+* Coffee With Me
+* Lending
+-->
