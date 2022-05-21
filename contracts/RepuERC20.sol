@@ -6,28 +6,19 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20VotesComp.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp, Ownable, ReentrancyGuard {
-    address public factory;
-
-    //==================== Initialization ====================//
-
+contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp, Ownable {
     constructor(
         string memory symbol
     )
         ERC20Capped(1000000000 * 10e18)
         ERC20(symbol, string(abi.encodePacked('r', symbol)))
         ERC20Permit(string(abi.encodePacked('r', symbol)))
-    {
-        factory = _msgSender();
-    }
+    {}
     
     // called once by the factory at time of deployment
-    function initialize(address origin) public {
-        require(msg.sender == factory, "Repusitory: FORBIDDEN"); // sufficient check
-        transferOwnership(origin);
-        _mint(origin, 1000000000 * 10e18);
+    function initialize() public onlyOwner {
+
     }
 
     //==================== Inherited Functions ====================//
@@ -64,4 +55,17 @@ contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp, Ownable, Reent
     ) internal virtual override(ERC20, ERC20Votes) {
         ERC20Votes._afterTokenTransfer(from, to, amount);
     }
+
+    //==================== Functions ====================//
+
+    function mint(address account, uint256 amount) public onlyOwner {
+        _mint(account, amount);
+    }
+
+    // /**
+    //  * TODO: onlyOwner
+    //  */
+    // function burn(address account, uint256 amount) public {
+    //     _burn(account, amount);
+    // }
 }

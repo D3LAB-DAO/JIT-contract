@@ -2,12 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-
 import "./RepuERC20.sol";
 
 interface IRepuERC20 {
-    function initialize(address origin) external;
+    function initialize() external;
 }
 
 contract RepuFactory is Ownable {
@@ -34,7 +32,10 @@ contract RepuFactory is Ownable {
         assembly {
             rToken := create2(0, add(bytecode, 0x20), mload(bytecode), salt)
         }
-        IRepuERC20(rToken).initialize(msgSender);
+        
+        // TODO: require min REPUs for create rToken
+        IRepuERC20(rToken).initialize();
+        
         getRToken[msgSender] = rToken;
         allRTokens.push(rToken);
 
